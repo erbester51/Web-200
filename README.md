@@ -12,6 +12,7 @@
 
 * Pw / Username discovery - cewl - `cewl -d 2 -m 5 -w docswords.txt https://example.com`
 * Binary discovery on box: ` which nc socat curl wget bash sh`
+
 ## Test All Of These Scenarios!
 - [ ] cewl/dirsearch
 - [ ] xss
@@ -22,7 +23,8 @@
 - [ ] SSTI
 - [ ] OS injection
 - [ ] Server Side Request Forgery
-### XSS (All code here is from the course material / notes)
+
+### XSS (Course material / notes)
 <b>Remember ALL CODE CAN BE TESTED IN CONSOLE IN CASE OF DEBUGGING</b>
 * Discovery
 	* `<script>alert(1)</script>`
@@ -108,7 +110,7 @@ Then reference this payload in your initial injection point ie `<script src="htt
 
 ### Cross Origin Attacks
 
-No specific CSRF scenarios were ever encountered in the labs, however you  may run into issues with CORS and self hosted payloads, such as external XSS.js files. The easiest way to fix this after much research is to use the http web server called Caddy
+May run into issues with CORS and self hosted payloads, such as external XSS.js files. The easiest way to fix this is to use the http web server called Caddy
 
 1. Install: sudo apt get install caddy
 2. From within the directory where your xss.js file lives, create a file called Caddyfile
